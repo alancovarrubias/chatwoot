@@ -127,4 +127,41 @@ RSpec.describe 'Canned Responses API', type: :request do
       end
     end
   end
+
+  describe 'POST /api/v1/accounts/{account.id}/canned_responses/bulk', :focus do
+    context 'when it is an unauthenticated user' do
+      it 'returns unauthorized' do
+        puts 'hey'
+        post "/api/v1/accounts/#{account.id}/canned_responses/bulk"
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'when it is an authenticated user' do
+      let(:agent) { create(:user, account: account, role: :agent) }
+
+      it 'returns success' do
+        params = { short_code: 'short', content: 'content' }
+
+        post "/api/v1/accounts/#{account.id}/canned_responses/bulk",
+             params: params,
+             headers: agent.create_new_auth_token,
+             as: :multipart
+
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'creates a new canned response' do
+        params = { short_code: 'short', content: 'content' }
+
+        post "/api/v1/accounts/#{account.id}/canned_responses/bulk",
+             params: params,
+             headers: agent.create_new_auth_token,
+             as: :multipart
+
+        expect(account.canned_responses.count).to eq(2)
+      end
+    end
+  end
 end

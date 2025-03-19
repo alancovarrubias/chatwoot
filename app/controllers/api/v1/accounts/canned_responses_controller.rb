@@ -21,6 +21,10 @@ class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseCont
     head :ok
   end
 
+  def bulk
+    head :ok
+  end
+
   private
 
   def fetch_canned_response
