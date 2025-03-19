@@ -131,7 +131,6 @@ RSpec.describe 'Canned Responses API', type: :request do
   describe 'POST /api/v1/accounts/{account.id}/canned_responses/bulk', :focus do
     context 'when it is an unauthenticated user' do
       it 'returns unauthorized' do
-        puts 'hey'
         post "/api/v1/accounts/#{account.id}/canned_responses/bulk"
 
         expect(response).to have_http_status(:unauthorized)
@@ -152,8 +151,11 @@ RSpec.describe 'Canned Responses API', type: :request do
         expect(response).to have_http_status(:success)
       end
 
+      let(:file) { fixture_file_upload('translations.tar.gz', 'application/x-tar') }  # Modify the path to a valid test file
+      let(:json_metadata) { { metadata: { description: "Bulk canned responses" } }.to_json }
+
       it 'creates a new canned response' do
-        params = { short_code: 'short', content: 'content' }
+        params = { file: file, metadata: json_metadata }
 
         post "/api/v1/accounts/#{account.id}/canned_responses/bulk",
              params: params,
